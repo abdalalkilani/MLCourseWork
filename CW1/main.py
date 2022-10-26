@@ -10,7 +10,7 @@ depth = 10
 
 test_split = 0.2
 
-#function from labs
+#imports the data file as shown from function in labs
 def read_data(file_name):
 	x = []
 	y_labels = []
@@ -37,12 +37,12 @@ def split_data(x, y, test_proportion, folds = 5, random_generator=default_rng())
 	y_train = y[shuffled_indices[:n_train]]
 	x_test = x[shuffled_indices[n_train:]]
 	y_test = y[shuffled_indices[n_train:]]
-	return (x_train, x_test, y_train, y_test)
-
-
 
 	return (x_train, x_test, y_train, y_test)
 
+#Splits data into a test and training set using k-fold cross validation
+#This is in order not to bias the evaluation based on what goes into test and what goes into training data
+#We will take the mean for the evaluation matrix for all k folds to determine our true evaluation metrics
 def cross_validation_split(x_dataset, y_dataset, folds=5):
 	x_dataset_split = list()
 	x_test_splits = list()
@@ -82,6 +82,7 @@ def cross_validation_split(x_dataset, y_dataset, folds=5):
 	return x_dataset_split, x_train_splits, y_dataset_split, y_train_splits
 
 #testing k-fold cross splitting
+#seed in order to keep random splits consistent while changing code
 seed(2)
 x_dataset = [[1], [2], [3], [4], [5], [6], [7], [8], [9], [10], [11], [12], [13], [14], [15]]
 y_dataset = [[1], [2], [3], [4], [5], [6], [7], [8], [9], [10], [11], [12], [13], [14], [15]]
