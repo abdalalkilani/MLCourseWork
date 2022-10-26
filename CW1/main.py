@@ -33,79 +33,64 @@ def split_data(x, y, test_proportion, folds = 5, random_generator=default_rng())
 	shuffled_indices = random_generator.permutation(len(x))
 	n_test = round(len(x) * test_proportion)
 	n_train = len(x) - n_test
-
-	x_train = []
-	x_test = []
-	y_train = []
-	y_test = []
-
-	for i in range(folds):
-		x_train_temp = x[shuffled_indices[:n_train]]
-		y_train_temp = y[shuffled_indices[:n_train]]
-		x_test_temp = x[shuffled_indices[n_train:]]
-		y_test_temp = y[shuffled_indices[n_train:]]
-
-		x_train.append(x_train_temp)
-		x_test.append(x_test_temp)
-		y_train.append(y_train_temp)
-		y_test.append(y_test_temp)
+	x_train = x[shuffled_indices[:n_train]]
+	y_train = y[shuffled_indices[:n_train]]
+	x_test = x[shuffled_indices[n_train:]]
+	y_test = y[shuffled_indices[n_train:]]
+	return (x_train, x_test, y_train, y_test)
 
 
 
 	return (x_train, x_test, y_train, y_test)
 
-def cross_validation_split(dataset, folds=5):
-	dataset_split = list()
-	test_splits = list()
-	train_splits = list()
-	dataset_copy = list(dataset)
-	fold_size = int(len(dataset) / folds)
-	dataset2 = dataset
+def cross_validation_split(x_dataset, y_dataset, folds=5):
+	x_dataset_split = list()
+	x_test_splits = list()
+	x_train_splits = list()
+	x_dataset_copy = list(x_dataset)
+	fold_size = int(len(x_dataset) / folds)
+	y_dataset_split = list()
+	y_test_splits = list()
+	y_train_splits = list()
+	y_dataset_copy = list(y_dataset)
 
-	# shuffled_indices = random_generator.permutation(len(dataset))
 
 	for i in range(folds):
-		fold = list()
-		while len(fold) < fold_size:
-			index = randrange(len(dataset_copy))
-			fold.append(dataset_copy.pop(index))
-		dataset_split.append(fold)
-		test_splits.append(fold)
-		
-		# print(folds)
-		print("fold", fold)
-		# print(len(fold))
-		# print(fold_size)
-		
-		# leftover.remove(fold)
-		# print(fold[0])
-		leftover = copy.deepcopy(dataset)
-		print("dataset", dataset)
+		x_fold = list()
+		y_fold = list()
+		while len(x_fold) < fold_size:
+			index = randrange(len(x_dataset_copy))
+			x_fold.append(x_dataset_copy.pop(index))
+			y_fold.append(y_dataset_copy.pop(index))
 
-		print("leftover", leftover)
-		leftover.remove(fold[0])
-		leftover.remove(fold[1])
-		print("leftover", leftover)
-		train_splits.append(leftover)
-		# leftover.clear()
-		print("train_splits", train_splits)
+		x_dataset_split.append(x_fold)
+		x_test_splits.append(x_fold)
+		y_dataset_split.append(y_fold)
+		y_test_splits.append(y_fold)
 
+		x_leftover = copy.deepcopy(x_dataset)
+		y_leftover = copy.deepcopy(y_dataset)
 
+		for j in range(fold_size):
+			x_leftover.remove(x_fold[j])
+			y_leftover.remove(y_fold[j])
 
-	# for j in range(folds):
-	# 	test_splits.append(dataset_split[j])
-	# 	train_splits = dataset_split[np.arange(len(dataset_split))!=j]
-		
+		x_train_splits.append(x_leftover)
+		y_train_splits.append(y_leftover)
 
 	 
-	return dataset_split, train_splits
+	return x_dataset_split, x_train_splits, y_dataset_split, y_train_splits
 
+#testing k-fold cross splitting
+seed(2)
+x_dataset = [[1], [2], [3], [4], [5], [6], [7], [8], [9], [10], [11], [12], [13], [14], [15]]
+y_dataset = [[1], [2], [3], [4], [5], [6], [7], [8], [9], [10], [11], [12], [13], [14], [15]]
+x_test_folds, x_train_folds, y_test_folds, y_train_folds = cross_validation_split(x_dataset, y_dataset, 5)
 
-seed(1)
-dataset = [[1], [2], [3], [4], [5], [6], [7], [8], [9], [10]]
-test_folds, train_folds = cross_validation_split(dataset, 5)
-print("test_folds", test_folds)
-print("train_folds", train_folds)
+print("x_test_folds", x_test_folds)
+print("x_train_folds", x_train_folds)
+print("y test_folds", y_test_folds)
+print("y train_folds", y_train_folds)
 
 
 if __name__ == '__name__':
