@@ -11,6 +11,8 @@ if __name__ == '__name__':
             dataset.append(line[:-1].split('\t'))
         dataset = np.array(dataset).astype(int)
 
+    # TO-DO: split the dataset into a training dataset ,an evaluation dataset and a test dataset
+
     # tree building by calling decision_tree_training()
     tree = decision_tree_learning(dataset, depth)
 
