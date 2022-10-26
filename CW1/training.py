@@ -64,6 +64,17 @@ def decision_tree_learning(dataset, depth):
     right_node = decision_tree_learning(dataset[index:], depth-1)
     return { 'attribute': split_attribute, 'value': split_value, 'left': left_node, 'right': right_node }
 
+def predict(tree, x):
+    y = []
+    for row in x:
+        if tree['depth'] == 0:
+            y.append(tree['label'])
+        elif row[tree['attribute']] >= tree['value']:
+            y.append(predict(tree['left'], row))
+        else:
+            y.append(predict(tree['right'], row))
+    return np.array(y)
+
     
     
     
