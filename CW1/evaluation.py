@@ -40,4 +40,4 @@ def other_metrics(test_db, trained_tree):
         metrics[1,i] = cmatrix[i,i] / np.sum(cmatrix[i,:])
         metrics[2,i] = (2*metrics[0,i]*metrics[1,i]) / (metrics[0,i]+metrics[1,i])
     
-    return cmatrix
+    return cmatrix, metrics
