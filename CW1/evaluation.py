@@ -1,13 +1,10 @@
 import numpy as np
 from training import predict
 
-# 10-fold cross-validation on both datasets
-    # - must return accuracy of tree
-
+# returns accuracy
 def evaluate(test_db, trained_tree):
     x_test = test_db[:-1]
     y_test = test_db[-1]
-
     y_predict = predict(x_test)
 
     assert len(y_test) == len(y_predict)
@@ -17,6 +14,7 @@ def evaluate(test_db, trained_tree):
     except ZeroDivisionError:
         return 0
 
+# returns cmatrix and other metrics
 def other_metrics(test_db, trained_tree):
     
     x_test = test_db[:-1]
@@ -36,8 +34,11 @@ def other_metrics(test_db, trained_tree):
     # three rows for precision, recall, f1
     metrics = np.zeroes(classes, 3)
     for i in range(classes):
-        metrics[0,i] = cmatrix[i,i] / np.sum(cmatrix[:,i])
-        metrics[1,i] = cmatrix[i,i] / np.sum(cmatrix[i,:])
-        metrics[2,i] = (2*metrics[0,i]*metrics[1,i]) / (metrics[0,i]+metrics[1,i])
+        if np.sum(cmatrix[:,i]) > 0:
+            metrics[0,i] = cmatrix[i,i] / np.sum(cmatrix[:,i])
+        if np.sum(cmatrix[i,:]) > 0:
+            metrics[1,i] = cmatrix[i,i] / np.sum(cmatrix[i,:])
+        if ((metrics[0,i]+metrics[1,i]) > 0) and (len(metrics[0,i])==len(metrics[1,i])):
+            metrics[2,i] = (2*metrics[0,i]*metrics[1,i]) / (metrics[0,i]+metrics[1,i])
     
     return cmatrix, metrics
