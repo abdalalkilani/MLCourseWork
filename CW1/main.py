@@ -18,7 +18,7 @@ def read_data(file_name):
             row = line.strip().split("\t")
             dataset.append(list(map(float, row))) 
             # dataset.append(line[:-1].split('\t'))
-    return np.array(dataset).astype(int)
+    return np.array(dataset)
         
 
 # REMEMBER our final tree will not split the data and will be trained with all available data
