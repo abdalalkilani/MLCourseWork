@@ -43,9 +43,6 @@ def find_split(dataset):
             if max_information_gain < gain:
                 max_information_gain, attribute, value, index = gain, j, (left_dataset[-1][0]+right_dataset[0][0])/2, i
     return attribute, value, index
-            
-
-
 
 
 def decision_tree_learning(dataset, depth):
@@ -60,8 +57,8 @@ def decision_tree_learning(dataset, depth):
         return { 'label': max(attribute_count, key = attribute_count.get), 'depth': 0}
     
     split_attribute, split_value, index = find_split(dataset)
-    left_node = decision_tree_learning(dataset[:index], depth-1)
-    right_node = decision_tree_learning(dataset[index:], depth-1)
+    left_node = decision_tree_learning(dataset[dataset[:,split_attribute].argsort()][:index], depth-1)
+    right_node = decision_tree_learning(dataset[dataset[:,split_attribute].argsort()][index:], depth-1)
     return { 'attribute': split_attribute, 'value': split_value, 'left': left_node, 'right': right_node }
 
 def predict(tree, x):
@@ -75,14 +72,98 @@ def predict(tree, x):
             y.append(predict(tree['right'], row))
     return np.array(y)
 
+class DecisionTreeBuilder:
+    def __init__(self, dataset, folds = 10):
+        self.dataset = dataset
+        self.folds = folds
+        self.test_folds_used = []
+        self.validation_folds_used = []
+        self.split_data_by_label()
+
+    def split_data_by_label(self):
+        y = dataset[:,-1]
+        labels = np.unique(y)
+        data_by_label = []
+        self.label_count = 0
+        for e in labels:
+            tmp = dataset[y==e].copy()
+            rng = np.random.default_rng(12345)
+            rng.shuffle(tmp)
+            data_by_label.append(np.array_split(tmp, self.folds))
+            self.label_count += 1
+        self.data_by_label = np.array(data_by_label)
+    
+    def update_test_set(self):
+        current_split = -1
+        try:
+            current_split = self.test_folds_used[-1]-1
+        except:
+            current_split = self.folds-1
+        self.test_folds_used.append(current_split)
+        test_set = self.data_by_label[0][current_split]
+        rest_set = np.concatenate((self.data_by_label[0][:current_split], self.data_by_label[0][current_split+1:]))
+        for i in range(1, self.label_count):
+            test_set = np.concatenate((test_set, self.data_by_label[i][current_split]))
+            rest_set = np.concatenate((rest_set, self.data_by_label[i][:current_split]))
+            rest_set = np.concatenate((rest_set, self.data_by_label[i][current_split+1:]))
+
+        self.current_test_set = test_set
+        self.current_rest_set = rest_set
+    
+    def update_validation_set(self):
+        current_split = -1
+        try:
+            current_split = self.validation_folds_used[-1]-1
+        except:
+            current_split = self.folds-1
+        self.validation_folds_used.append(current_split)
+        validation_set = self.data_by_label[0][current_split]
+        train_set = np.concatenate((self.data_by_label[0][:current_split], self.data_by_label[0][current_split+1:]))
+        for i in range(1, self.label_count):
+            validation_set = np.concatenate((validation_set, self.data_by_label[i][current_split]))
+            train_set = np.concatenate((train_set, self.data_by_label[i][:current_split]))
+            train_set = np.concatenate((train_set, self.data_by_label[i][current_split+1:]))
+
+        self.current_validation_set = validation_set
+        self.current_train_set = np.reshape(train_set, (train_set.shape[0]*train_set.shape[1], train_set.shape[2]))
+    
+    def reset_validation_folds(self):
+        self.validation_folds_used = []
+
+
+
+    def find_optimal_depth(self, min_depth = 10, max_depth = 12):
+        for k in range(self.folds):
+            self.update_test_set()
+            for kk in range(self.folds-1):
+                for depth in range(min_depth, max_depth+1):
+                    tree = decision_tree_learning(self.dataset, depth)
+                    print('=================================================================================')
+                    print(tree)
+                    print('=================================================================================')
+                self.update_validation_set()
+            self.reset_validation_folds()
+
     
     
     
 if __name__ == '__main__':
     np.set_printoptions(threshold=np.inf)
-    with open('./intro2ML-coursework1/wifi_db/clean_dataset.txt') as file:
+    def read_data(file_name):
         dataset = []
-        for line in file:
-            dataset.append(line[:-1].split('\t'))
-        dataset = np.array(dataset).astype(int)
-        print(decision_tree_learning(dataset, 3))
+        for line in open(file_name):
+            if line.strip() != "": # handle empty rows in file
+                try:
+                    row = line.strip().split("\t")
+                    dataset.append(list(map(float, row))) 
+                except ValueError:
+                    row = line.strip().split(" ")
+                    dataset.append(list(map(float, row)))
+                # dataset.append(line[:-1].split('\t'))
+        return np.array(dataset)
+    dataset = read_data('./intro2ML-coursework1/wifi_db/clean_dataset.txt')
+
+    print(decision_tree_learning(dataset, 3))
+    # cv = DecisionTreeBuilder(dataset)
+    
+    # print(cv.find_optimal_depth())

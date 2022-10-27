@@ -1,3 +1,4 @@
+from inspect import classify_class_attrs
 from math import remainder
 import numpy as np
 import copy
@@ -15,8 +16,12 @@ def read_data(file_name):
     dataset = []
     for line in open(file_name):
         if line.strip() != "": # handle empty rows in file
-            row = line.strip().split("\t")
-            dataset.append(list(map(float, row))) 
+            try:
+                row = line.strip().split("\t")
+                dataset.append(list(map(float, row))) 
+            except ValueError:
+                row = line.strip().split(" ")
+                dataset.append(list(map(float, row)))
             # dataset.append(line[:-1].split('\t'))
     return np.array(dataset)
         
@@ -75,7 +80,7 @@ def XYcross_validation_split(x_dataset, y_dataset, folds=5):
      
     return x_dataset_split, x_train_splits, y_dataset_split, y_train_splits
 
-def cross_validation_split(datset, folds=10):
+def cross_validation_split(dataset, folds=10):
     dataset_split = list()
     test_splits = list()
     train_splits = list()
@@ -90,13 +95,15 @@ def cross_validation_split(datset, folds=10):
             index = randrange(len(dataset_copy))
             fold.append(dataset_copy.pop(index))
 
-        dataset_split.append(fold)
+        
         test_splits.append(fold)
 
-        leftover = copy.deepcopy(dataset)
+        leftover = list()
 
-        for j in range(fold_size):
-            leftover.remove(fold[j])
+        for row in dataset:
+            if not row in fold:
+                leftover.append(row)
+            
 
         train_splits.append(leftover)
 
@@ -105,22 +112,44 @@ def cross_validation_split(datset, folds=10):
 
 #testing k-fold cross splitting
 #seed in order to keep random splits consistent while changing code
-seed(2)
-dataset = [[1], [2], [3], [4], [5], [6], [7], [8], [9], [10], [11], [12], [13], [14], [15]]
-y_dataset = [[1], [2], [3], [4], [5], [6], [7], [8], [9], [10], [11], [12], [13], [14], [15]]
-x_test_folds, x_train_folds, y_test_folds, y_train_folds = cross_validation_split(dataset, 10)
 
-print("x_test_folds", x_test_folds)
-print("x_train_folds", x_train_folds)
-print("y test_folds", y_test_folds)
-print("y train_folds", y_train_folds)
+# seed(2)
+# dataset = [[1], [2], [3], [4], [5], [6], [7], [8], [9], [10], [11], [12], [13], [14], [15]]
+# y_dataset = [[1], [2], [3], [4], [5], [6], [7], [8], [9], [10], [11], [12], [13], [14], [15]]
+# x_test_folds, x_train_folds, y_test_folds, y_train_folds = cross_validation_split(dataset, 10)
+
+# print("x_test_folds", x_test_folds)
+# print("x_train_folds", x_train_folds)
+# print("y test_folds", y_test_folds)
+# print("y train_folds", y_train_folds)
+
+class TreeBuilder:
+    def __init__(self, dataset):
+        self.dataset = dataset
+        
+    
+    def get_optimal_hyperparameters(self):
+        pass
+
+class CrossValidation:
+    def __init__(self, dataset, folds = 10):
+        if(self.initialised):
+            return
+        self.initialised = True
+        self.dataset = dataset
+        self.folds = folds
+    
+    def split_data_by_label(self):
+        [classes, y] = np.unique(dataset[:-1])
+
+
 
 
 if __name__ == '__main__':
     # import data
     np.set_printoptions(threshold=np.inf)
-    dataset = read_data('./intro2ML-coursework1/wifi_db/clean_dataset.txt')
-    # print(dataset)
+    dataset = [read_data('./intro2ML-coursework1/wifi_db/clean_dataset.txt'), read_data('./intro2ML-coursework1/wifi_db/noisy_dataset.txt')]
+
 
     # TO-DO: split the dataset into a training dataset ,an evaluation dataset and a test dataset
 
