@@ -28,7 +28,7 @@ def read_data(file_name):
 
 # REMEMBER our final tree will not split the data and will be trained with all available data
 # splitting data is only for evaluation purposes
-def split_data(x, y, test_proportion, folds = 5, random_generator=default_rng()):
+def split_data(x, y, test_proportion, folds = 10, random_generator=default_rng()):
 
 	shuffled_indices = random_generator.permutation(len(x))
 	n_test = round(len(x) * test_proportion)
