@@ -69,7 +69,7 @@ def predict(tree, x):
     for row in x:
         if tree['depth'] == 0:
             y.append(tree['label'])
-        elif row[tree['attribute']] >= tree['value']:
+        elif row[tree['attribute']] < tree['value']:
             y.append(predict(tree['left'], row))
         else:
             y.append(predict(tree['right'], row))
