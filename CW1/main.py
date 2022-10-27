@@ -37,7 +37,7 @@ def split_data(x, y, test_proportion, folds = 10, random_generator=default_rng()
 #Splits data into a test and training set using k-fold cross validation
 #This is in order not to bias the evaluation based on what goes into test and what goes into training data
 #We will take the mean for the evaluation matrix for all k folds to determine our true evaluation metrics
-def cross_validation_split(x_dataset, y_dataset, folds=5):
+def XYcross_validation_split(x_dataset, y_dataset, folds=5):
     x_dataset_split = list()
     x_test_splits = list()
     x_train_splits = list()
@@ -75,24 +75,52 @@ def cross_validation_split(x_dataset, y_dataset, folds=5):
      
     return x_dataset_split, x_train_splits, y_dataset_split, y_train_splits
 
+def cross_validation_split(datset, folds=10):
+    dataset_split = list()
+    test_splits = list()
+    train_splits = list()
+    dataset_copy = list(dataset)
+    fold_size = int(len(dataset) / folds)
+
+
+
+    for i in range(folds):
+        fold = list()
+        while len(fold) < fold_size:
+            index = randrange(len(dataset_copy))
+            fold.append(dataset_copy.pop(index))
+
+        dataset_split.append(fold)
+        test_splits.append(fold)
+
+        leftover = copy.deepcopy(dataset)
+
+        for j in range(fold_size):
+            leftover.remove(fold[j])
+
+        train_splits.append(leftover)
+
+     
+    return dataset_split, train_splits
+
 #testing k-fold cross splitting
 #seed in order to keep random splits consistent while changing code
 seed(2)
-x_dataset = [[1], [2], [3], [4], [5], [6], [7], [8], [9], [10], [11], [12], [13], [14], [15]]
+dataset = [[1], [2], [3], [4], [5], [6], [7], [8], [9], [10], [11], [12], [13], [14], [15]]
 y_dataset = [[1], [2], [3], [4], [5], [6], [7], [8], [9], [10], [11], [12], [13], [14], [15]]
-x_test_folds, x_train_folds, y_test_folds, y_train_folds = cross_validation_split(x_dataset, y_dataset, 5)
+x_test_folds, x_train_folds, y_test_folds, y_train_folds = cross_validation_split(dataset, 10)
 
-# print("x_test_folds", x_test_folds)
-# print("x_train_folds", x_train_folds)
-# print("y test_folds", y_test_folds)
-# print("y train_folds", y_train_folds)
+print("x_test_folds", x_test_folds)
+print("x_train_folds", x_train_folds)
+print("y test_folds", y_test_folds)
+print("y train_folds", y_train_folds)
 
 
 if __name__ == '__main__':
     # import data
     np.set_printoptions(threshold=np.inf)
     dataset = read_data('./intro2ML-coursework1/wifi_db/clean_dataset.txt')
-    print(dataset)
+    # print(dataset)
 
     # TO-DO: split the dataset into a training dataset ,an evaluation dataset and a test dataset
 
