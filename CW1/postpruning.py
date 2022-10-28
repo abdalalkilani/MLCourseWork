@@ -11,7 +11,11 @@ def postpruning(built_tree):
     left_depth = left_node['depth']
     right_depth = right_node['depth']
 
-    if left_depth & right_depth != 0:
-        new_tree = built_tree
-        if evaluate(new_tree) > evaluate(built_tree):
-            built_tree = new_tree
+    while(left_depth & right_depth !=0):
+        postpruning(left_depth)
+        postpruning(right_depth)
+        if left_depth & right_depth == 0:
+            temp_tree = built_tree.pop(left_node)
+            new_tree = temp_tree.pop(right_node)
+            if evaluate(new_tree) > evaluate(built_tree):
+                built_tree = new_tree
