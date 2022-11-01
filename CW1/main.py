@@ -1,10 +1,7 @@
-from inspect import classify_class_attrs
-from math import remainder
 import numpy as np
-import copy
-from CW1.training import DecisionTreeBuilder
-from training import decision_tree_learning, predict
-from numpy.random import default_rng
+from postpruning import postpruning
+from training import DecisionTreeBuilder
+from training import decision_tree_learning
 from random import seed
 from random import randrange
 
@@ -29,16 +26,16 @@ def read_data(file_name):
 
 # REMEMBER our final tree will not split the data and will be trained with all available data
 # splitting data is only for evaluation purposes
-def split_data(x, y, test_proportion, folds = 10, random_generator=default_rng()):
-    shuffled_indices = random_generator.permutation(len(x))
-    n_test = round(len(x) * test_proportion)
-    n_train = len(x) - n_test
-    x_train = x[shuffled_indices[:n_train]]
-    y_train = y[shuffled_indices[:n_train]]
-    x_test = x[shuffled_indices[n_train:]]
-    y_test = y[shuffled_indices[n_train:]]
+# def split_data(x, y, test_proportion, folds = 10, random_generator=default_rng()):
+#     shuffled_indices = random_generator.permutation(len(x))
+#     n_test = round(len(x) * test_proportion)
+#     n_train = len(x) - n_test
+#     x_train = x[shuffled_indices[:n_train]]
+#     y_train = y[shuffled_indices[:n_train]]
+#     x_test = x[shuffled_indices[n_train:]]
+#     y_test = y[shuffled_indices[n_train:]]
 
-    return (x_train, x_test, y_train, y_test)
+#     return (x_train, x_test, y_train, y_test)
 
 #Splits data into a test and training set using k-fold cross validation
 #This is in order not to bias the evaluation based on what goes into test and what goes into training data
@@ -143,6 +140,24 @@ class CrossValidation:
     def split_data_by_label(self):
         [classes, y] = np.unique(dataset[:-1])
 
+def split_data(dataset):
+    classes = np.unique(dataset[:,-1])
+    training, test = None, None
+    for e in classes:
+        tmp = dataset[dataset[:,-1]==e]
+        rng = np.random.default_rng(12345)
+        rng.shuffle(tmp)
+        if(type(training)==type(None)):
+            training = tmp[:int(0.9*len(tmp))]
+        else:
+            training = np.concatenate((training, tmp[:int(0.9*len(tmp))]))
+        if(type(test)==type(None)):
+            test = tmp[int(0.9*len(tmp)):]
+        else:
+            test = np.concatenate((test, tmp[int(0.9*len(tmp)):]))
+    return training, test
+
+
 
 
 
@@ -155,11 +170,13 @@ if __name__ == '__main__':
     # TO-DO: split the dataset into a training dataset ,an evaluation dataset and a test dataset
 
     DTB = DecisionTreeBuilder(dataset[0])
-    
-
-    # tree building by calling decision_tree_training()
-    # tree = decision_tree_learning(dataset, depth)
+    best_depth = DTB.find_optimal_depth(8,8)
+    pre_pruning = decision_tree_learning(split_data(dataset[0])[0])
+    print(pre_pruning)
 
     # pruning
+
+    post_pruning = postpruning(pre_pruning)
+    print(post_pruning)
 
     # evaluation - cross validation
