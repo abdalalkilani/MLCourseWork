@@ -95,15 +95,53 @@ test_data = {
             "depth" : 0
         },
         "right" : {
-            "label" : {
-                "Col 8" : 3,
-                "Col 6" : 2,
-                "Col 7" : 1
-            }, 
-            "depth" : 0
+            "attribute" : "Col 7",
+            "value" : -5,
+            "left" : {
+                "label" : {
+                    "Col 8" : 9,
+                    "Col 3" : 3,
+                    "Col 5" : 2
+                }, 
+                "depth" : 0
+            },
+            "right" : {
+                "attribute" : "Col 7",
+                "value" : -5,
+                "left" : {
+                    "label" : {
+                        "Col 8" : 9,
+                        "Col 3" : 3,
+                        "Col 5" : 2
+                    }, 
+                    "depth" : 0
+                },
+                "right" : {
+                    "attribute" : "Col 7",
+                    "value" : -5,
+                    "left" : {
+                        "label" : {
+                            "Col 8" : 9,
+                            "Col 3" : 3,
+                            "Col 5" : 2
+                        }, 
+                        "depth" : 0
+                    },
+                    "right" : {
+                        "label" : {
+                            "Col 8" : 3,
+                            "Col 6" : 2,
+                            "Col 7" : 1
+                        }, 
+                        "depth" : 0
+                    }
+                }
+            }
         }
     }
 }
+
+squeeze_bounds = 0.8
 
 def modify_tree(decision_tree: dict, depth: int):
     decision_tree["depth"] = depth
@@ -127,13 +165,14 @@ def modify_tree(decision_tree: dict, depth: int):
             return depth2
 
 def draw_diagram(decision_tree: dict, fig: plt.figure, final_depth: int, ax: plt.subplot, x_coord = 0.5):
-    y_coord = 1 - ( ( (decision_tree["depth"] / final_depth) * 0.8 ) + 0.1 )
+    y_coord = 1 - ( ( (decision_tree["depth"] / final_depth) * squeeze_bounds ) + 0.1 )
+    fontsize = 40 / (decision_tree["depth"]+1)
 
-    fig.text(x_coord, y_coord, decision_tree["text"], transform=fig.transFigure, bbox={'facecolor': 'white', 'pad': 10}, ha='center', va='center')
+    fig.text(x_coord, y_coord, decision_tree["text"], transform=fig.transFigure, bbox={'facecolor': 'white', 'pad': 5}, ha='center', va='center', fontsize = fontsize)
     
     if "label" not in decision_tree.keys():
-        next_x_modifier = 1 / (2 ** (decision_tree["depth"]+2) )
-        next_y_modifier = ( (1 / final_depth) * 0.8 )
+        next_x_modifier = 0.95 / (2 ** (decision_tree["depth"]+2) )
+        next_y_modifier = ( (1 / final_depth) * squeeze_bounds )
 
         ax.plot([x_coord, x_coord - next_x_modifier],[y_coord, y_coord - next_y_modifier], color='blue', linewidth=2, transform=fig.transFigure, figure=fig)
         ax.plot([x_coord, x_coord + next_x_modifier],[y_coord, y_coord - next_y_modifier], color='green', linewidth=2, transform=fig.transFigure, figure=fig)
@@ -145,16 +184,11 @@ def draw_diagram(decision_tree: dict, fig: plt.figure, final_depth: int, ax: plt
 def print_tree(decision_tree: dict):
     
     fig = plt.figure()
-
     final_depth = modify_tree(decision_tree, 0)
-
     ax = fig.add_subplot()
-    plt.tight_layout(pad = 0)
 
     draw_diagram(decision_tree, fig, final_depth, ax)
-
-    # ax.axis('off')
-
+    ax.set_position([0, 0, 1, 1])
     plt.show()
 
 print_tree(test_data)
