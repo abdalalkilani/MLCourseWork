@@ -8,7 +8,7 @@ decision_tree_learning: - takes in a dataset as a matrix and a depth variable
 '''
 
 import numpy as np
-from evaluation import evaluate
+
 
 def check_all_samples(dataset):
     sample = dataset[0][-1]
@@ -48,14 +48,14 @@ def find_split(dataset):
 
 def decision_tree_learning(dataset, depth):
     if check_all_samples(dataset):
-        return { 'label': dataset[0][-1], 'depth': 0 }
+        return { 'label': {dataset[0][-1]: len(dataset)}, 'depth': 0 }
     if depth==1:
         labels = [e[-1] for e in dataset]
         attributes = set(labels)
         attribute_count = {}
         for e in attributes:
             attribute_count[e] = labels.count(e)
-        return { 'label': max(attribute_count, key = attribute_count.get), 'depth': 0}
+        return { 'label': attribute_count, 'depth': 0}
     
     split_attribute, split_value, index = find_split(dataset)
     left_node = decision_tree_learning(dataset[dataset[:,split_attribute].argsort()][:index], depth-1)
@@ -65,14 +65,18 @@ def decision_tree_learning(dataset, depth):
 def predict(tree, x):
     y = []
     for row in x:
-        if tree['depth'] == 0:
-            y.append(tree['label'])
-        elif row[tree['attribute']] < tree['value']:
-            y.append(predict(tree['left'], row))
-        else:
-            y.append(predict(tree['right'], row))
+            y.append(predict_row(tree, row))
     return np.array(y)
 
+def predict_row(tree, row):
+    try:
+        depth = tree['depth']
+        return max(tree['label'], key = tree['label'].get)
+    except KeyError:
+        if(row[tree['attribute']] < tree['value']):
+            return predict_row(tree['left'], row)
+        else:
+            return predict_row(tree['right'], row)
 class DecisionTreeBuilder:
     def __init__(self, dataset, folds = 10):
         self.dataset = dataset
@@ -82,12 +86,12 @@ class DecisionTreeBuilder:
         self.split_data_by_label()
 
     def split_data_by_label(self):
-        y = dataset[:,-1]
+        y = self.dataset[:,-1]
         labels = np.unique(y)
         data_by_label = []
         self.label_count = 0
         for e in labels:
-            tmp = dataset[y==e].copy()
+            tmp = self.dataset[y==e].copy()
             rng = np.random.default_rng(12345)
             rng.shuffle(tmp)
             data_by_label.append(np.array_split(tmp, self.folds))
@@ -134,18 +138,18 @@ class DecisionTreeBuilder:
 
 
     def find_optimal_depth(self, min_depth = 8, max_depth = 8):
-        accuracy_map = map()
+        accuracy_map = {}
         for k in range(self.folds):
             self.update_test_set()
             for kk in range(self.folds-1):
+                self.update_validation_set()
                 for depth in range(min_depth, max_depth+1):
-                    tree = decision_tree_learning(self.dataset, depth)
-                    accuracy = evaluate(tree)
+                    tree = decision_tree_learning(self.current_train_set, depth)
+                    accuracy = evaluate(self.current_validation_set, tree)
                     try:
                         accuracy_map[depth] += [accuracy]
                     except KeyError:
                         accuracy_map[depth] = [accuracy]
-                self.update_validation_set()
             self.reset_validation_folds()
         best_accuracy, best_depth = 0, 0
         for depth, accuracy_list in accuracy_map.items():
@@ -153,6 +157,48 @@ class DecisionTreeBuilder:
             if average_accuracy > best_accuracy:
                 best_accuracy, best_depth = average_accuracy, depth
         return best_depth
+
+# returns accuracy
+def evaluate(test_db, trained_tree):
+    x_test = test_db[:,:-1]
+    y_test = test_db[:,-1]
+    y_predict = predict(trained_tree, x_test)
+
+    assert len(y_test) == len(y_predict)
+
+    try:
+        return np.sum(y_predict == y_test) / len(y_test)
+    except ZeroDivisionError:
+        return 0
+
+# returns cmatrix and other metrics
+def other_metrics(test_db, trained_tree):
+    
+    x_test = test_db[:-1]
+    y_test = test_db[-1]
+
+    y_predict = predict(trained_tree, x_test)
+    assert len(y_test) == len(y_predict)
+
+    allclasses = np.unique(y_test)
+    classes = len(allclasses)
+    cmatrix = np.zeros((classes, classes))
+    #j is predicted, i is actual
+    for i in range(classes):
+        for j in range(classes):
+            cmatrix[i, j] = np.sum((y_test==allclasses[i]) & (y_predict==allclasses[j]))
+
+    # three rows for precision, recall, f1
+    metrics = np.zeros((3, classes))
+    for i in range(classes):
+        if np.sum(cmatrix[:,i]) > 0:
+            metrics[0,i] = cmatrix[i,i] / np.sum(cmatrix[:,i])
+        if np.sum(cmatrix[i,:]) > 0:
+            metrics[1,i] = cmatrix[i,i] / np.sum(cmatrix[i,:])
+        if ((metrics[0,i]+metrics[1,i]) > 0):
+            metrics[2,i] = (2*metrics[0,i]*metrics[1,i]) / (metrics[0,i]+metrics[1,i])
+    
+    return cmatrix, metrics
 
     
     
