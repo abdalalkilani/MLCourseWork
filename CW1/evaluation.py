@@ -15,7 +15,7 @@ def evaluate(test_db, trained_tree):
         return 0
 
 # returns cmatrix and other metrics
-def other_metrics():
+def other_metrics(test_db, trained_tree):
     
     x_test = test_db[:-1]
     y_test = test_db[-1]
