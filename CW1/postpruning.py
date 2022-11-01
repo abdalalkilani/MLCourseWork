@@ -1,8 +1,8 @@
 import numpy as np
 import copy
 
-from training import decision_tree_learning
-from evaluation import evaluate
+from training import decision_tree_learning, evaluate
+
 
 def replace_parent(tree, parent_node, new_leaf_value):
     for k, v in tree.items():
