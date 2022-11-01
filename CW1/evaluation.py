@@ -15,7 +15,7 @@ def evaluate(test_db, trained_tree):
         return 0
 
 # returns cmatrix and other metrics
-def other_metrics(test_db, trained_tree):
+def other_metrics():
     
     x_test = test_db[:-1]
     y_test = test_db[-1]
@@ -25,20 +25,20 @@ def other_metrics(test_db, trained_tree):
 
     allclasses = np.unique(y_test)
     classes = len(allclasses)
-    cmatrix = np.zeroes(classes, classes)
+    cmatrix = np.zeros((classes, classes))
     #j is predicted, i is actual
     for i in range(classes):
         for j in range(classes):
             cmatrix[i, j] = np.sum((y_test==allclasses[i]) & (y_predict==allclasses[j]))
 
     # three rows for precision, recall, f1
-    metrics = np.zeroes(classes, 3)
+    metrics = np.zeros((3, classes))
     for i in range(classes):
         if np.sum(cmatrix[:,i]) > 0:
             metrics[0,i] = cmatrix[i,i] / np.sum(cmatrix[:,i])
         if np.sum(cmatrix[i,:]) > 0:
             metrics[1,i] = cmatrix[i,i] / np.sum(cmatrix[i,:])
-        if ((metrics[0,i]+metrics[1,i]) > 0) and (len(metrics[0,i])==len(metrics[1,i])):
+        if ((metrics[0,i]+metrics[1,i]) > 0):
             metrics[2,i] = (2*metrics[0,i]*metrics[1,i]) / (metrics[0,i]+metrics[1,i])
     
     return cmatrix, metrics
