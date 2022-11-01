@@ -8,6 +8,7 @@ decision_tree_learning: - takes in a dataset as a matrix and a depth variable
 '''
 
 import numpy as np
+from evaluation import evaluate
 
 def check_all_samples(dataset):
     sample = dataset[0][-1]
@@ -132,17 +133,26 @@ class DecisionTreeBuilder:
 
 
 
-    def find_optimal_depth(self, min_depth = 10, max_depth = 12):
+    def find_optimal_depth(self, min_depth = 8, max_depth = 8):
+        accuracy_map = map()
         for k in range(self.folds):
             self.update_test_set()
             for kk in range(self.folds-1):
                 for depth in range(min_depth, max_depth+1):
                     tree = decision_tree_learning(self.dataset, depth)
-                    print('=================================================================================')
-                    print(tree)
-                    print('=================================================================================')
+                    accuracy = evaluate(tree)
+                    try:
+                        accuracy_map[depth] += [accuracy]
+                    except KeyError:
+                        accuracy_map[depth] = [accuracy]
                 self.update_validation_set()
             self.reset_validation_folds()
+        best_accuracy, best_depth = 0, 0
+        for depth, accuracy_list in accuracy_map.items():
+            average_accuracy = np.average(accuracy_list)
+            if average_accuracy > best_accuracy:
+                best_accuracy, best_depth = average_accuracy, depth
+        return best_depth
 
     
     

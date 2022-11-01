@@ -2,6 +2,7 @@ from inspect import classify_class_attrs
 from math import remainder
 import numpy as np
 import copy
+from CW1.training import DecisionTreeBuilder
 from training import decision_tree_learning, predict
 from numpy.random import default_rng
 from random import seed
@@ -152,6 +153,9 @@ if __name__ == '__main__':
 
 
     # TO-DO: split the dataset into a training dataset ,an evaluation dataset and a test dataset
+
+    DTB = DecisionTreeBuilder(dataset[0])
+    
 
     # tree building by calling decision_tree_training()
     # tree = decision_tree_learning(dataset, depth)
