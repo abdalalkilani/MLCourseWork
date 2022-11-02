@@ -122,24 +122,6 @@ def cross_validation_split(dataset, folds=10):
 # print("y test_folds", y_test_folds)
 # print("y train_folds", y_train_folds)
 
-class TreeBuilder:
-    def __init__(self, dataset):
-        self.dataset = dataset
-        
-    
-    def get_optimal_hyperparameters(self):
-        pass
-
-class CrossValidation:
-    def __init__(self, dataset, folds = 10):
-        if(self.initialised):
-            return
-        self.initialised = True
-        self.dataset = dataset
-        self.folds = folds
-    
-    def split_data_by_label(self):
-        [classes, y] = np.unique(dataset[:-1])
 
 def split_data(dataset):
     classes = np.unique(dataset[:,-1])

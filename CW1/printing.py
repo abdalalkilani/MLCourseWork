@@ -8,7 +8,7 @@ decision_tree_learning: - takes in a dataset as a matrix and a depth variable
 '''
 
 from array import array
-from this import s
+# from this import s
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.lines as lines
