@@ -66,7 +66,7 @@ def predict(tree, x):
     y = []
     for row in x:
             y.append(predict_row(tree, row))
-    return np.array(y)
+    return np.array(y).astype(float)
 
 def predict_row(tree, row):
     try:

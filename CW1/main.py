@@ -151,18 +151,19 @@ if __name__ == '__main__':
 
 
     # TO-DO: split the dataset into a training dataset ,an evaluation dataset and a test dataset
-    for i, type_ in enumerate(['clean', 'noisy']):
+    for i, type_ in enumerate(['clean']):
 
         DTB = DecisionTreeBuilder(dataset[i])
-        best_depth = DTB.find_optimal_depth(10,13)
+        best_depth = DTB.find_optimal_depth(11,11)
         training, test = split_data(dataset[i])
         pre_pruning = decision_tree_learning(training, best_depth)
-        print_tree(pre_pruning, f'pre_pruning_{type_}')
+        print(f'pre pruning tree: {pre_pruning}')
+        print_tree(dict(pre_pruning), f'pre_pruning_{type_}')
 
         # pruning
 
-        post_pruning = postpruning(pre_pruning, pre_pruning, "")
-        print_tree(post_pruning, f'post_pruning_{type_}')
+        post_pruning = postpruning(pre_pruning, pre_pruning, "", test)
+        print_tree(dict(post_pruning), f'post_pruning_{type_}')
         # evaluation - cross validation
 
         print(f'accuracy {type_}: {evaluate(test, post_pruning)}')

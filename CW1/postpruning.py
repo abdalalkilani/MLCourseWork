@@ -477,7 +477,10 @@ def postpruning(built_tree, whole_tree, path_string, validation_set):
 
     # old_tree =  copy.deepcopy(whole_tree)
     old_tree = dict(whole_tree)
-    print(id(old_tree))
+    if(built_tree==whole_tree):
+        built_tree = whole_tree
+
+    print(id(built_tree))
     print(id(whole_tree))
     initial = 0
     current_accuracy = evaluate(validation_set, built_tree)
@@ -509,19 +512,21 @@ def postpruning(built_tree, whole_tree, path_string, validation_set):
                 print(new_tree)
                 print(built_tree)
                 built_tree = dict(new_tree)
+                print(new_tree)
+                print(built_tree)
+                print(old_tree)
                 new_accuracy = evaluate(validation_set, whole_tree)
                 # new_accuracy = random.uniform(0, 1)
                 print(old_tree == whole_tree)
                 if new_accuracy >= current_accuracy:
                     # print("New Tree")
                     # print(json.dumps(whole_tree, indent=4))
-                    # # print_tree(whole_tree)
+                    # print_tree(whole_tree)
                     # or is next line
                     # built_tree =  copy.deepcopy(new_tree)
                     current_accuracy = new_accuracy
-                    return new_tree
                 else:
-                    whole_tree = old_tree
+                    whole_tree = dict(old_tree)
             except KeyError:
                 path_string += "R"
                 right_node = postpruning(right_node, whole_tree, path_string, validation_set)
