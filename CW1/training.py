@@ -34,14 +34,14 @@ def information_gain(dataset, left_subset, right_subset):
 
 
 def find_split(dataset):
-    max_information_gain, attribute, value, index = 0, 0, 0, 0
+    max_information_gain, attribute, value, index = None, 0, 0, 0
     for j in range(dataset.shape[1]-1):
         single_attribute_array = dataset[dataset[:, j].argsort()][:, [j,-1]]
         for i in range(1, single_attribute_array.shape[0]):
             left_dataset = single_attribute_array[:i]
             right_dataset = single_attribute_array[i:]
             gain = information_gain(dataset, left_dataset, right_dataset)
-            if max_information_gain < gain:
+            if type(max_information_gain) == type(None) or max_information_gain < gain:
                 max_information_gain, attribute, value, index = gain, j, (left_dataset[-1][0]+right_dataset[0][0])/2, i
     return attribute, value, index
 
@@ -71,7 +71,8 @@ def predict(tree, x):
 def predict_row(tree, row):
     try:
         depth = tree['depth']
-        return max(tree['label'], key = tree['label'].get)
+        if(depth == 0):
+            return max(tree['label'], key = tree['label'].get)
     except KeyError:
         if(row[tree['attribute']] < tree['value']):
             return predict_row(tree['left'], row)
