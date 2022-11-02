@@ -1,9 +1,10 @@
 import numpy as np
 from postpruning import postpruning
 from training import DecisionTreeBuilder
-from training import decision_tree_learning
+from training import decision_tree_learning, evaluate, other_metrics
 from random import seed
 from random import randrange
+from printing import print_tree
 
 depth = 10
 
@@ -168,15 +169,21 @@ if __name__ == '__main__':
 
 
     # TO-DO: split the dataset into a training dataset ,an evaluation dataset and a test dataset
+    for i, type_ in enumerate(['clean', 'noisy']):
 
-    DTB = DecisionTreeBuilder(dataset[0])
-    best_depth = DTB.find_optimal_depth(8,8)
-    pre_pruning = decision_tree_learning(split_data(dataset[0])[0])
-    print(pre_pruning)
+        DTB = DecisionTreeBuilder(dataset[i])
+        best_depth = DTB.find_optimal_depth(8,20)
+        training, test = split_data(dataset[i])
+        pre_pruning = decision_tree_learning(training, best_depth)
+        print_tree(pre_pruning, f'pre_pruning_{type_}')
 
-    # pruning
+        # pruning
 
-    post_pruning = postpruning(pre_pruning)
-    print(post_pruning)
+        post_pruning = postpruning(pre_pruning, pre_pruning, "")
+        print_tree(post_pruning, f'pre_pruning_{type_}')
+        # evaluation - cross validation
 
-    # evaluation - cross validation
+        print(f'accuracy {type_}: {evaluate(test, post_pruning)}')
+        print(f'metrics {type_}: {other_metrics(test, post_pruning)}')
+
+        print(f'final_tree {type_}: {decision_tree_learning(dataset[0], best_depth)}')

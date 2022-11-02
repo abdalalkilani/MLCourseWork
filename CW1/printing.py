@@ -8,6 +8,8 @@ decision_tree_learning: - takes in a dataset as a matrix and a depth variable
 '''
 
 from array import array
+from this import s
+import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.lines as lines
 import json
@@ -181,7 +183,7 @@ def draw_diagram(decision_tree: dict, fig: plt.figure, final_depth: int, ax: plt
         draw_diagram(decision_tree["right"], fig, final_depth, ax, x_coord + next_x_modifier)
     
 
-def print_tree(decision_tree: dict):
+def print_tree(decision_tree: dict, name):
     
     fig = plt.figure()
     final_depth = modify_tree(decision_tree, 0)
@@ -189,7 +191,7 @@ def print_tree(decision_tree: dict):
 
     draw_diagram(decision_tree, fig, final_depth, ax)
     ax.set_position([0, 0, 1, 1])
-    plt.show()
+    plt.savefig(f'fig_{name}.jpg')
 
-print_tree(test_data)
+print_tree(test_data, 'test_name')
 

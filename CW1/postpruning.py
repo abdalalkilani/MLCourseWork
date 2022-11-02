@@ -165,8 +165,8 @@ def postpruning(built_tree, whole_tree, path_string):
 
     while ((old_tree != built_tree) or (initial == 0)):
         initial = 1
-        print("New Tree")
-        print(json.dumps(built_tree, indent=4))
+        # print("New Tree")
+        # print(json.dumps(built_tree, indent=4))
         try:
             left_depth = left_node['depth']
             try:
