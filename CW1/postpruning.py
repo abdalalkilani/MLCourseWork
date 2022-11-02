@@ -153,23 +153,24 @@ def replace_parent(tree, parent_node, new_leaf_value):
 #             d[k] = v
 #     return d
 
-def postpruning(built_tree, whole_tree, path_string):
+def postpruning(built_tree, whole_tree, path_string, validation_set):
 
     right_node = built_tree['right']
     left_node = built_tree['left']
 
-    old_tree =  copy.deepcopy(whole_tree)
+    # old_tree =  copy.deepcopy(whole_tree)
+    old_tree = dict(whole_tree)
+    print(id(old_tree))
+    print(id(whole_tree))
     initial = 0
-    # current_accuracy = evaluate(built_tree)
-    current_accuracy = random.uniform(0, 1)
-    print("New Tree")
-    print(json.dumps(whole_tree, indent=4))
-    print_tree(whole_tree)
+    current_accuracy = evaluate(validation_set, built_tree)
+    # current_accuracy = random.uniform(0, 1)
+   
 
     while ((old_tree != whole_tree) or (initial == 0)):
         initial = 1
-        # print("New Tree")
-        # print(json.dumps(built_tree, indent=4))
+        
+        
         try:
             left_depth = left_node['depth']
             try:
@@ -189,9 +190,12 @@ def postpruning(built_tree, whole_tree, path_string):
                 new_tree['label'] = label
 
                 built_tree = new_tree
-                # new_accuracy = evaluate(whole_tree)
-                new_accuracy = random.uniform(0, 1)
+                new_accuracy = evaluate(validation_set, whole_tree)
+                # new_accuracy = random.uniform(0, 1)
                 if new_accuracy >= current_accuracy:
+                    print("New Tree")
+                    print(json.dumps(whole_tree, indent=4))
+                    print_tree(whole_tree)
                     # or is next line
                     # built_tree =  copy.deepcopy(new_tree)
                     built_tree = new_tree
@@ -217,5 +221,4 @@ def postpruning(built_tree, whole_tree, path_string):
 
     return built_tree
 
-if __name__ == '__main__':
-    postpruning(test_data, test_data, "")
+postpruning(test_data, test_data, "")
