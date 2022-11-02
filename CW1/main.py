@@ -172,7 +172,7 @@ if __name__ == '__main__':
     for i, type_ in enumerate(['clean', 'noisy']):
 
         DTB = DecisionTreeBuilder(dataset[i])
-        best_depth = DTB.find_optimal_depth(8,20)
+        best_depth = DTB.find_optimal_depth(10,13)
         training, test = split_data(dataset[i])
         pre_pruning = decision_tree_learning(training, best_depth)
         print_tree(pre_pruning, f'pre_pruning_{type_}')
@@ -180,7 +180,7 @@ if __name__ == '__main__':
         # pruning
 
         post_pruning = postpruning(pre_pruning, pre_pruning, "")
-        print_tree(post_pruning, f'pre_pruning_{type_}')
+        print_tree(post_pruning, f'post_pruning_{type_}')
         # evaluation - cross validation
 
         print(f'accuracy {type_}: {evaluate(test, post_pruning)}')

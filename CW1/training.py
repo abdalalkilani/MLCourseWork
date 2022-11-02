@@ -174,8 +174,8 @@ def evaluate(test_db, trained_tree):
 # returns cmatrix and other metrics
 def other_metrics(test_db, trained_tree):
     
-    x_test = test_db[:-1]
-    y_test = test_db[-1]
+    x_test = test_db[:,:-1]
+    y_test = test_db[:,-1]
 
     y_predict = predict(trained_tree, x_test)
     assert len(y_test) == len(y_predict)

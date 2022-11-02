@@ -217,4 +217,5 @@ def postpruning(built_tree, whole_tree, path_string):
 
     return built_tree
 
-postpruning(test_data, test_data, "")
+if __name__ == '__main__':
+    postpruning(test_data, test_data, "")
