@@ -158,15 +158,18 @@ def postpruning(built_tree, whole_tree, path_string):
     right_node = built_tree['right']
     left_node = built_tree['left']
 
-    old_tree =  copy.deepcopy(built_tree)
+    old_tree =  copy.deepcopy(whole_tree)
     initial = 0
     # current_accuracy = evaluate(built_tree)
     current_accuracy = random.uniform(0, 1)
+    print("New Tree")
+    print(json.dumps(whole_tree, indent=4))
+    print_tree(whole_tree)
 
-    while ((old_tree != built_tree) or (initial == 0)):
+    while ((old_tree != whole_tree) or (initial == 0)):
         initial = 1
-        print("New Tree")
-        print(json.dumps(built_tree, indent=4))
+        
+        
         try:
             left_depth = left_node['depth']
             try:
