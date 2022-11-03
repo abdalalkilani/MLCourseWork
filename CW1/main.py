@@ -71,6 +71,6 @@ if __name__ == '__main__':
         print(f'accuracy {type_}: {evaluate(test, post_pruning)}')
         print(f'metrics {type_}: {other_metrics(test, post_pruning)}')
 
-        print(f'final_tree {type_}: {decision_tree_learning(dataset[0], best_depth)}')
+        print(f'final_tree {type_}: {decision_tree_learning(dataset[0], 15)}')
         print_tree(dict(pre_pruning), f'pre_pruning_{type_}')
         print_tree(dict(post_pruning), f'post_pruning_{type_}')
