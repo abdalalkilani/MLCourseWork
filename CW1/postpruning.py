@@ -4,6 +4,7 @@ from printing import print_tree
 from training import decision_tree_learning, evaluate
 
 import json
+import sys
 
 
 test_data ={'attribute': 0, 'value': -54.5, 'left': {'attribute': 4, 'value': -59.0, 'left': {'attribute': 3, 'value': -57.0, 'left': {'attribute': 2, 'value': -54.0, 'left': {'label': {1.0: 436}, 'depth': 0}, 'right': {'attribute': 6, 'value': -85.5, 'left': {'attribute': 0, 'value': -60.5, 'left': {'label': {1.0: 1}, 'depth': 0}, 'right': {'label': {4.0: 2}, 'depth': 0}}, 'right': {'label': {1.0: 11}, 'depth': 0}}}, 'right': {'attribute': 2, 'value': -56.0, 'left': {'attribute': 0, 'value': -56.0, 'left': {'label': {1.0: 2}, 'depth': 0}, 'right': {'label': {3.0: 2}, 'depth': 0}}, 'right': {'label': {3.0: 11}, 'depth': 0}}}, 'right': {'attribute': 4, 'value': -56.5, 'left': {'attribute': 0, 'value': -56.0, 'left': {'label': {4.0: 4}, 'depth': 0}, 'right': {'label': {3.0: 2}, 'depth': 0}}, 'right': {'label': {4.0: 441}, 'depth': 0}}}, 'right': {'attribute': 0, 'value': -44.5, 'left': {'attribute': 4, 'value': -70.0, 'left': {'attribute': 3, 'value': -50.0, 'left': {'label': {3.0: 7}, 'depth': 0}, 'right': {'attribute': 3, 'value': -45.0, 'left': {'attribute': 1, 'value': -56.0, 'left': {'attribute': 2, 'value': -55.5, 'left': {'attribute': 0, 'value': -50.5, 'left': {'label': {3.0: 1}, 'depth': 0}, 'right': {'label': {2.0: 3}, 'depth': 0}}, 'right': {'label': {3.0: 3}, 'depth': 0}}, 'right': {'label': {2.0: 5}, 'depth': 0}}, 'right': {'label': {2.0: 23}, 'depth': 0}}}, 'right': {'attribute': 3, 'value': -39.5, 'left': {'attribute': 4, 'value': -53.5, 'left': {'attribute': 2, 'value': -54.0, 'left': {'attribute': 6, 'value': -77.0, 'left': {'attribute': 2, 'value': -55.0, 'left': {'label': {3.0: 79}, 'depth': 0}, 'right': {'attribute': 2, 'value': -55.0, 'left': {'attribute': 0, 'value': -47.0, 'left': {'label': {2.0: 1, 3.0: 3}, 'depth': 0}, 'right': {'label': {2.0: 3}, 'depth': 0}}, 'right': {'attribute': 5, 'value': -77.5, 'left': {'label': {3.0: 31}, 'depth': 0}, 'right': {'label': {2.0: 2, 3.0: 3}, 'depth': 0}}}}, 'right': {'attribute': 1, 'value': -54.0, 'left': {'attribute': 1, 'value': -60.5, 'left': {'label': {3.0: 2}, 'depth': 0}, 'right': {'label': {2.0: 8}, 'depth': 0}}, 'right': {'label': {3.0: 6}, 'depth': 0}}}, 'right': {'attribute': 6, 'value': -72.0, 'left': {'label': {3.0: 294}, 'depth': 0}, 'right': {'label': {2.0: 1}, 'depth': 0}}}, 'right': {'label': {4.0: 3}, 'depth': 0}}, 'right': {'label': {2.0: 7}, 'depth': 0}}}, 'right': {'attribute': 3, 'value': -48.0, 'left': {'attribute': 0, 'value': -42.0, 'left': {'attribute': 2, 'value': -56.0, 'left': {'label': {2.0: 1}, 'depth': 0}, 'right': {'label': {3.0: 6}, 'depth': 0}}, 'right': {'label': {2.0: 9}, 'depth': 0}}, 'right': {'label': {2.0: 387}, 'depth': 0}}}}
@@ -61,9 +62,10 @@ def replace_parent(tree, parent_node, new_leaf_value):
 
 def replace(leaf_to_add, tree_being_replaced, current_subtree):
     try:
-        depth = current_subtree['label']
-        if(tree_being_replaced == current_subtree):
-            return leaf_to_add
+        label = current_subtree['label']
+        # print('label')
+        # if(tree_being_replaced == current_subtree):
+        #     return leaf_to_add
         return current_subtree
     except KeyError:
         if(tree_being_replaced == current_subtree):
@@ -87,7 +89,7 @@ def postpruning(built_tree, whole_tree, path_string, validation_set):
     # print(id(built_tree))
     # print(id(whole_tree))
     initial = 0
-    current_accuracy = evaluate(validation_set, built_tree)
+    current_accuracy = evaluate(validation_set, old_tree)
     # current_accuracy = random.uniform(0, 1)
    
 
@@ -109,21 +111,30 @@ def postpruning(built_tree, whole_tree, path_string, validation_set):
                 # new_tree.clear()
                 label = {i: left_node['label'].get(i, 0) + right_node['label'].get(i, 0) 
                             for i in set(left_node['label']).union(right_node['label'])}
+                # new_tree = { 'label': {},
+                #              'depth': 0}
+
                 new_tree = { 'label': {},
-                             'depth': 0}
+                             'depth': 'AHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH'}
                 new_tree['label'] = label
 
                 print(new_tree)
                 print(built_tree)
-                
+                print(old_tree == whole_tree)
+                print(whole_tree)
                 whole_tree = replace(new_tree, built_tree, dict(whole_tree))
+                print("")
+                print(whole_tree)
+                print(old_tree == whole_tree)
+                # sys.exit("Error message")
                 # print(new_tree)
                 # print(built_tree)
                 # print(json.dumps(whole_tree, indent=4))
-
                 new_accuracy = evaluate(validation_set, whole_tree)
+                print(new_accuracy)
+                print(current_accuracy)
                 # new_accuracy = random.uniform(0, 1)
-                print(old_tree == whole_tree)
+                
                 if new_accuracy >= current_accuracy:
                     # print("New Tree")
                     # print(json.dumps(whole_tree, indent=4))
@@ -131,24 +142,30 @@ def postpruning(built_tree, whole_tree, path_string, validation_set):
                     # or is next line
                     # built_tree =  copy.deepcopy(new_tree)
                     current_accuracy = new_accuracy
+                    return new_tree
+                    # sys.exit("Error message1")
                 else:
                     whole_tree = dict(old_tree)
+                    print("YO", old_tree == whole_tree)
+                    return built_tree
+                    # sys.exit("Error message2")
             except KeyError:
-                path_string += "R"
+                # path_string += "R"
                 right_node = postpruning(right_node, whole_tree, path_string, validation_set)
 
         except KeyError:
             try:
                 right_depth = right_node['depth']
-                path_string += "L"
+                # path_string += "L"
                 left_node = postpruning(left_node, whole_tree, path_string, validation_set)
             except KeyError:
-                path_string += "L"
+                # path_string += "L"
                 left_node = postpruning(left_node, whole_tree, path_string, validation_set)
-                path_string = path_string[:-1] + "R"
+                # path_string = path_string[:-1] + "R"
                 right_node = postpruning(right_node, whole_tree, path_string, validation_set)
 
-
+    print("WHOLE TREEEEEEEEEEEEEEEEEEE")
+    print(whole_tree)
     return whole_tree
 
 if __name__ == '__main__':
@@ -184,3 +201,13 @@ if __name__ == '__main__':
         return training, test
 
     print(postpruning(dict(test_data), dict(test_data), "", split_data(read_data('./intro2ML-coursework1/wifi_db/clean_dataset.txt'))[1])==test_data)
+
+# top_tree = {'left': { 'left': { 'label': True }, 'right':{ 'label': True }} , 'right': { 'label': True }}
+# built_node = top_tree['left']
+
+# left_node = {'left': {'label': False}}
+
+#TESTING REPLACE - IT WORKS
+# left_node = {'label': {1.0: 1, 4.0: 2}, 'depth': 'AHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH'}
+# built_node = {'attribute': 0, 'value': -60.5, 'left': {'label': {1.0: 1}, 'depth': 0}, 'right': {'label': {4.0: 2}, 'depth': 0}}
+# print(replace(left_node, built_node, dict(test_data)))
