@@ -66,13 +66,18 @@ def predict(tree, x):
     y = []
     for row in x:
             y.append(predict_row(tree, row))
+    # print(y)
     return np.array(y).astype(float)
 
 def predict_row(tree, row):
+    # print(tree)
     try:
         depth = tree['depth']
+
         if(depth == 0):
             return max(tree['label'], key = tree['label'].get)
+        # else:
+        #     print(depth)
     except KeyError:
         if(row[tree['attribute']] < tree['value']):
             return predict_row(tree['left'], row)
@@ -166,6 +171,10 @@ def evaluate(test_db, trained_tree):
     x_test = test_db[:,:-1]
     y_test = test_db[:,-1]
     y_predict = predict(trained_tree, x_test)
+
+    # print(y_predict)
+    # print("--------------------------------------------------------------------------------------------------")
+    # print(y_test)
 
     assert len(y_test) == len(y_predict)
 

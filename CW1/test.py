@@ -7,18 +7,19 @@ post_pruned = {'attribute': 0, 'value': -54.5, 'left': {'attribute': 4, 'value':
 
 
 if __name__ == '__main__':
-    dataset = [main.read_data('./intro2ML-coursework1/wifi_db/clean_dataset.txt'), main.read_data('./intro2ML-coursework1/wifi_db/noisy_dataset.txt')]
-    training, test = main.split_data(dataset[1]) # CHANGE INDEX LATER
-    print(f'accuracy: {main.evaluate(test, pre_pruned)}')
+    # dataset = [main.read_data('./intro2ML-coursework1/wifi_db/clean_dataset.txt'), main.read_data('./intro2ML-coursework1/wifi_db/noisy_dataset.txt')]
+    # training, test = main.split_data(dataset[1]) # CHANGE INDEX LATER
+    # print(f'accuracy: {main.evaluate(test, pre_pruned)}')
 
-    def update(d, u):
-        for k, v in u.items():
-            if isinstance(v, dict):
-                d[k] = update(d.get(k, {}), v)
-            else:
-                d[k] = v
-        return d
+    # def update(d, u):
+    #     for k, v in u.items():
+    #         if isinstance(v, dict):
+    #             d[k] = update(d.get(k, {}), v)
+    #         else:
+    #             d[k] = v
+    #     return d
 
-    update(top_tree, left_node)
+    # update(top_tree, left_node)
 
-    print(top_tree)
+    # print(top_tree)
+    assert(0==0)
