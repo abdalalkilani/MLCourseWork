@@ -7,12 +7,10 @@ decision_tree_learning: - takes in a dataset as a matrix and a depth variable
 
 '''
 
-from array import array
 # from this import s
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.lines as lines
-import json
 
 test_data = {
     "attribute" : "Col 5",
@@ -193,5 +191,6 @@ def print_tree(decision_tree: dict, name):
     ax.set_position([0, 0, 1, 1])
     plt.savefig(f'fig_{name}.jpg')
 
-print_tree(test_data, 'test_name')
+if __name__ == '__main__':
+    print_tree(test_data, 'test_name')
 
