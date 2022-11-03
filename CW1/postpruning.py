@@ -1,3 +1,4 @@
+from tkinter import W
 import numpy as np
 from printing import print_tree
 
@@ -122,6 +123,7 @@ def postpruning(built_tree, whole_tree, path_string, validation_set):
                 print(built_tree)
                 print(old_tree == whole_tree)
                 print(whole_tree)
+                # result1 = any('AHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH' in d.values() for d in whole_tree.values())
                 whole_tree = replace(new_tree, built_tree, dict(whole_tree))
                 print("")
                 print(whole_tree)
@@ -131,6 +133,9 @@ def postpruning(built_tree, whole_tree, path_string, validation_set):
                 # print(built_tree)
                 # print(json.dumps(whole_tree, indent=4))
                 new_accuracy = evaluate(validation_set, whole_tree)
+                # result2 = any('AHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH' in d.values() for d in whole_tree.values())
+                # if result2 > result1:
+                #     sys.exit("Error message")
                 print(new_accuracy)
                 print(current_accuracy)
                 # new_accuracy = random.uniform(0, 1)
@@ -141,32 +146,33 @@ def postpruning(built_tree, whole_tree, path_string, validation_set):
                     # print_tree(whole_tree)
                     # or is next line
                     # built_tree =  copy.deepcopy(new_tree)
+                    # old_tree = dict(whole_tree)
                     current_accuracy = new_accuracy
-                    return new_tree
+                    return new_tree, dict(whole_tree)
                     # sys.exit("Error message1")
                 else:
                     whole_tree = dict(old_tree)
                     print("YO", old_tree == whole_tree)
-                    return built_tree
+                    return built_tree, dict(whole_tree)
                     # sys.exit("Error message2")
             except KeyError:
                 # path_string += "R"
-                right_node = postpruning(right_node, whole_tree, path_string, validation_set)
+                right_node, whole_tree = postpruning(right_node, whole_tree, path_string, validation_set)
 
         except KeyError:
             try:
                 right_depth = right_node['depth']
                 # path_string += "L"
-                left_node = postpruning(left_node, whole_tree, path_string, validation_set)
+                left_node, whole_tree = postpruning(left_node, whole_tree, path_string, validation_set)
             except KeyError:
                 # path_string += "L"
-                left_node = postpruning(left_node, whole_tree, path_string, validation_set)
+                left_node, whole_tree = postpruning(left_node, whole_tree, path_string, validation_set)
                 # path_string = path_string[:-1] + "R"
-                right_node = postpruning(right_node, whole_tree, path_string, validation_set)
+                right_node, whole_tree = postpruning(right_node, whole_tree, path_string, validation_set)
 
     print("WHOLE TREEEEEEEEEEEEEEEEEEE")
     print(whole_tree)
-    return whole_tree
+    return whole_tree, whole_tree
 
 if __name__ == '__main__':
 
@@ -200,7 +206,7 @@ if __name__ == '__main__':
                 test = np.concatenate((test, tmp[int(0.9*len(tmp)):]))
         return training, test
 
-    print(postpruning(dict(test_data), dict(test_data), "", split_data(read_data('./intro2ML-coursework1/wifi_db/clean_dataset.txt'))[1])==test_data)
+    print(postpruning(dict(test_data), dict(test_data), "", split_data(read_data('./intro2ML-coursework1/wifi_db/noisy_dataset.txt'))[1])==test_data)
 
 # top_tree = {'left': { 'left': { 'label': True }, 'right':{ 'label': True }} , 'right': { 'label': True }}
 # built_node = top_tree['left']
