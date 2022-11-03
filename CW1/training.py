@@ -91,13 +91,14 @@ class DecisionTreeBuilder:
         labels = np.unique(y)
         data_by_label = []
         self.label_count = 0
+        tmp = self.dataset
+        rng = np.random.default_rng(12345)
+        rng.shuffle(tmp)
         for e in labels:
-            tmp = self.dataset[y==e].copy()
-            rng = np.random.default_rng(12345)
-            rng.shuffle(tmp)
-            data_by_label.append(np.array_split(tmp, self.folds))
+        #     tmp = self.dataset[y==e].copy()
+        #     data_by_label.append(np.array_split(tmp, self.folds))
             self.label_count += 1
-        self.data_by_label = np.array(data_by_label)
+        self.data_by_label = np.array(np.array_split(tmp, self.folds))
     
     def update_test_set(self):
         current_split = -1
@@ -106,12 +107,12 @@ class DecisionTreeBuilder:
         except:
             current_split = self.folds-1
         self.test_folds_used.append(current_split)
-        test_set = self.data_by_label[0][current_split]
-        rest_set = np.concatenate((self.data_by_label[0][:current_split], self.data_by_label[0][current_split+1:]))
-        for i in range(1, self.label_count):
-            test_set = np.concatenate((test_set, self.data_by_label[i][current_split]))
-            rest_set = np.concatenate((rest_set, self.data_by_label[i][:current_split]))
-            rest_set = np.concatenate((rest_set, self.data_by_label[i][current_split+1:]))
+        test_set = self.data_by_label[current_split]
+        rest_set = np.concatenate((self.data_by_label[:current_split], self.data_by_label[current_split+1:]))
+        # for i in range(1, self.label_count):
+        #     test_set = np.concatenate((test_set, self.data_by_label[i][current_split]))
+        #     rest_set = np.concatenate((rest_set, self.data_by_label[i][:current_split]))
+        #     rest_set = np.concatenate((rest_set, self.data_by_label[i][current_split+1:]))
 
         self.current_test_set = test_set
         self.current_rest_set = rest_set
@@ -123,15 +124,16 @@ class DecisionTreeBuilder:
         except:
             current_split = self.folds-1
         self.validation_folds_used.append(current_split)
-        validation_set = self.data_by_label[0][current_split]
-        train_set = np.concatenate((self.data_by_label[0][:current_split], self.data_by_label[0][current_split+1:]))
-        for i in range(1, self.label_count):
-            validation_set = np.concatenate((validation_set, self.data_by_label[i][current_split]))
-            train_set = np.concatenate((train_set, self.data_by_label[i][:current_split]))
-            train_set = np.concatenate((train_set, self.data_by_label[i][current_split+1:]))
+        validation_set = self.data_by_label[current_split]
+        train_set = np.concatenate((self.data_by_label[:current_split], self.data_by_label[current_split+1:]))
+        # for i in range(1, self.label_count):
+        #     validation_set = np.concatenate((validation_set, self.data_by_label[i][current_split]))
+        #     train_set = np.concatenate((train_set, self.data_by_label[i][:current_split]))
+        #     train_set = np.concatenate((train_set, self.data_by_label[i][current_split+1:]))
 
         self.current_validation_set = validation_set
         self.current_train_set = np.reshape(train_set, (train_set.shape[0]*train_set.shape[1], train_set.shape[2]))
+        # print(self.current_validation_set.shape)
     
     def reset_validation_folds(self):
         self.validation_folds_used = []

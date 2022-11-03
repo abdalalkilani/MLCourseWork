@@ -113,8 +113,8 @@ def postpruning(built_tree, whole_tree, path_string, validation_set):
                              'depth': 0}
                 new_tree['label'] = label
 
-                print(new_tree)
-                print(built_tree)
+                # print(new_tree)
+                # print(built_tree)
                 
                 whole_tree = replace(new_tree, built_tree, dict(whole_tree))
                 # print(new_tree)
@@ -123,8 +123,8 @@ def postpruning(built_tree, whole_tree, path_string, validation_set):
 
                 new_accuracy = evaluate(validation_set, whole_tree)
                 # new_accuracy = random.uniform(0, 1)
-                print(old_tree == whole_tree)
-                if new_accuracy >= current_accuracy:
+                # print(old_tree == whole_tree)
+                if new_accuracy > current_accuracy:
                     # print("New Tree")
                     # print(json.dumps(whole_tree, indent=4))
                     # print_tree(whole_tree)
@@ -133,23 +133,24 @@ def postpruning(built_tree, whole_tree, path_string, validation_set):
                     current_accuracy = new_accuracy
                 else:
                     whole_tree = dict(old_tree)
+                    built_tree = dict(new_tree)
             except KeyError:
                 path_string += "R"
-                right_node = postpruning(right_node, whole_tree, path_string, validation_set)
+                right_node = dict(postpruning(right_node, whole_tree, path_string, validation_set))
 
         except KeyError:
             try:
                 right_depth = right_node['depth']
                 path_string += "L"
-                left_node = postpruning(left_node, whole_tree, path_string, validation_set)
+                left_node = dict(postpruning(left_node, whole_tree, path_string, validation_set))
             except KeyError:
                 path_string += "L"
-                left_node = postpruning(left_node, whole_tree, path_string, validation_set)
+                left_node = dict(postpruning(left_node, whole_tree, path_string, validation_set))
                 path_string = path_string[:-1] + "R"
-                right_node = postpruning(right_node, whole_tree, path_string, validation_set)
+                right_node = dict(postpruning(right_node, whole_tree, path_string, validation_set))
 
 
-    return whole_tree
+    return built_tree
 
 if __name__ == '__main__':
 
