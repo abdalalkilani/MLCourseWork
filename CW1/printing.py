@@ -158,13 +158,16 @@ def modify_tree(decision_tree: dict, depth: int):
 
     if "label" in decision_tree.keys():
         # It's a leaf node. Find the label for the leaf.
-        max_label = ["x", 0]
+        # max_label = ["x", 0]
 
-        for values in decision_tree["label"].keys():
-            if decision_tree["label"][values] > max_label[1]:
-                max_label[0] = values
+        # for values in decision_tree["label"].keys():
+        #     if decision_tree["label"][values] > max_label[1]:
+        #         max_label[0] = values
 
-        decision_tree["text"] = max_label[0]
+        # decision_tree["text"] = max_label[0]
+
+        decision_tree['text'] = max(decision_tree['label'], key = decision_tree['label'].get)
+
         return depth
     else:
         decision_tree["text"] = "Router " + str(decision_tree["attribute"]) + " < " + str(decision_tree["value"])

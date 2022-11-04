@@ -45,31 +45,70 @@ def split_data(dataset):
 
 
 if __name__ == '__main__':
+    import sys
+    try: 
+        path_to_data = sys.argv[1]
+        dataset = read_data(path_to_data)
+
+        try:
+            best_depth = int(sys.argv[2])
+            training, test = split_data(dataset)
+            pre_pruning = decision_tree_learning(training, best_depth)
+            print(f'accuracy before pruning: {evaluate(test, dict(pre_pruning))}')
+            print(f'metrics before pruning: {other_metrics(test, dict(pre_pruning))}')
+            p = Pruning(dict(pre_pruning), test)
+            post_pruning = dict(p.prune())
+            print(f'accuracy after pruning: {evaluate(test, post_pruning)}')
+            print(f'metrics after pruning: {other_metrics(test, post_pruning)}')
+            print_tree(dict(post_pruning), f'post_pruning')
+
+        except IndexError:
+
+
+            DTB = DecisionTreeBuilder(dataset)
+            best_depth = DTB.find_optimal_depth(3, 18)
+            training, test = split_data(dataset)
+            pre_pruning = decision_tree_learning(training, best_depth)
+            print(f'accuracy before pruning: {evaluate(test, dict(pre_pruning))}')
+            print(f'metrics before pruning: {other_metrics(test, dict(pre_pruning))}')
+
+            p = Pruning(dict(pre_pruning), test)
+            post_pruning = dict(p.prune())
+            # post_pruning = postpruning(pre_pruning, pre_pruning, "", test)
+            # evaluation - cross validation
+
+            print(f'accuracy after pruning: {evaluate(test, post_pruning)}')
+            print(f'metrics after pruning: {other_metrics(test, post_pruning)}')
+            
+            # print_tree(dict(pre_pruning), f'pre_pruning_{type_}')
+            print_tree(dict(post_pruning), f'post_pruning')
+            # print_tree(dict(final_tree), f'final_tree')
+    except IndexError:
+
+
     # import data
-    np.set_printoptions(threshold=np.inf)
-    dataset = [read_data('./intro2ML-coursework1/wifi_db/clean_dataset.txt'), read_data('./intro2ML-coursework1/wifi_db/noisy_dataset.txt')]
+        dataset = [read_data('./intro2ML-coursework1/wifi_db/clean_dataset.txt'), read_data('./intro2ML-coursework1/wifi_db/noisy_dataset.txt')]
 
 
-    # TO-DO: split the dataset into a training dataset ,an evaluation dataset and a test dataset
-    for i, type_ in enumerate(['clean', 'noisy']):
-        DTB = DecisionTreeBuilder(dataset[i]) # CHANGE INDEX LATER
-        best_depth = DTB.find_optimal_depth(3, 18)
-        training, test = split_data(dataset[i]) # CHANGE INDEX LATER
-        pre_pruning = decision_tree_learning(training, best_depth) #CHANGE THIS LATER
-        print(f'accuracy before pruning {type_}: {evaluate(test, dict(pre_pruning))}')
-        print(f'metrics before pruning {type_}: {other_metrics(test, dict(pre_pruning))}')
+        # TO-DO: split the dataset into a training dataset ,an evaluation dataset and a test dataset
+        for i, type_ in enumerate(['clean', 'noisy']):
+            DTB = DecisionTreeBuilder(dataset[i])
+            best_depth = DTB.find_optimal_depth(3, 18)
+            training, test = split_data(dataset[i])
+            pre_pruning = decision_tree_learning(training, best_depth)
+            print(f'accuracy before pruning {type_}: {evaluate(test, dict(pre_pruning))}')
+            print(f'metrics before pruning {type_}: {other_metrics(test, dict(pre_pruning))}')
 
-        # pruning
+            # pruning
 
-        p = Pruning(dict(pre_pruning), test)
-        post_pruning = dict(p.prune())
-        # post_pruning = postpruning(pre_pruning, pre_pruning, "", test)
-        # evaluation - cross validation
+            p = Pruning(dict(pre_pruning), test)
+            post_pruning = dict(p.prune())
+            # post_pruning = postpruning(pre_pruning, pre_pruning, "", test)
+            # evaluation - cross validation
 
-        print(f'accuracy after pruning {type_}: {evaluate(test, post_pruning)}')
-        print(f'metrics after pruning {type_}: {other_metrics(test, post_pruning)}')
+            print(f'accuracy after pruning {type_}: {evaluate(test, post_pruning)}')
+            print(f'metrics after pruning {type_}: {other_metrics(test, post_pruning)}')
 
-        final_tree = decision_tree_learning(dataset[i], best_depth)
-        # print_tree(dict(pre_pruning), f'pre_pruning_{type_}')
-        # print_tree(dict(post_pruning), f'post_pruning_{type_}')
-        print_tree(dict(final_tree), f'final_tree_{type_}')
+            # print_tree(dict(pre_pruning), f'pre_pruning_{type_}')
+            print_tree(dict(post_pruning), f'post_pruning')
+            # print_tree(dict(final_tree), f'final_tree_{type_}')
