@@ -8,7 +8,7 @@ decision_tree_learning: - takes in a dataset as a matrix and a depth variable
 '''
 
 import numpy as np
-import copy
+
 
 def check_all_samples(dataset):
     sample = dataset[0][-1]
@@ -166,7 +166,7 @@ class DecisionTreeBuilder:
         return best_depth
 
 # returns accuracy
-def evaluate_once(test_db, trained_tree):
+def evaluate(test_db, trained_tree):
     x_test = test_db[:,:-1]
     y_test = test_db[:,-1]
     y_predict = predict(trained_tree, x_test)
@@ -179,7 +179,7 @@ def evaluate_once(test_db, trained_tree):
         return 0
 
 # returns cmatrix and other metrics
-def other_metrics_once(test_db, trained_tree):
+def other_metrics(test_db, trained_tree):
     
     x_test = test_db[:,:-1]
     y_test = test_db[:,-1]
@@ -207,27 +207,8 @@ def other_metrics_once(test_db, trained_tree):
     
     return cmatrix, metrics
 
-def evaluate(tree, dataset, rng = np.random.default_rng(), folds = 10):
-    tmp = copy.deepcopy(dataset)
-    rng.shuffle(tmp)
-    sum_accuracy = 0
-    for k in range(folds):
-        sum_accuracy += evaluate_once(tmp[:(k+1)*dataset.shape[0],:], tree)
-    return sum_accuracy/folds
-
-def other_metrics(tree, dataset, rng = np.random.default_rng(), folds = 10):
-    tmp = copy.deepcopy(dataset)
-    rng.shuffle(tmp)
-    cmatrix, others = None, None
-    for k in range(folds):
-        if type(cmatrix)==type(None):
-            cmatrix, others = other_metrics_once(tmp[:(k+1)*dataset.shape[0],:], tree)
-        else:
-            tmp_c, tmp_o = other_metrics_once(tmp[:(k+1)*dataset.shape[0],:], tree)
-            cmatrix += tmp_c
-            others += tmp_o
-    return (cmatrix/folds), (others/folds)
-
+    
+    
     
 if __name__ == '__main__':
     np.set_printoptions(threshold=np.inf)

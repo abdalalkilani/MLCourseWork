@@ -22,12 +22,11 @@ def replace(leaf_to_add, tree_being_replaced, current_subtree):
 
 
 class Pruning:
-    def __init__(self, tree_to_be_pruned, dataset, rng = np.random.default_rng()):
+    def __init__(self, tree_to_be_pruned, dataset):
         self.current_best_tree = tree_to_be_pruned
-        self.current_best_accuracy = evaluate(tree_to_be_pruned, dataset, rng)
+        self.current_best_accuracy = evaluate(dataset, tree_to_be_pruned)
         self.dataset = dataset
         self.changed_tree = False
-        self.rng = rng
 
 
     def traverse_and_change(self, tree):
@@ -43,7 +42,7 @@ class Pruning:
                         for i in set(left_node['label']).union(right_node['label'])}
                 new_leaf = {'label': label, 'depth': 0}
                 current_tree_to_test = dict(replace(new_leaf, tree, dict(self.current_best_tree)))
-                new_accuracy = evaluate(current_tree_to_test, self.dataset, self.rng)
+                new_accuracy = evaluate(self.dataset, current_tree_to_test)
                 if(new_accuracy >= self.current_best_accuracy):
                     self.current_best_tree = dict(current_tree_to_test)
                     self.current_best_accuracy = new_accuracy
