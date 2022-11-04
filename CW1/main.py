@@ -55,11 +55,15 @@ if __name__ == '__main__':
             training, test = split_data(dataset)
             pre_pruning = decision_tree_learning(training, best_depth)
             print(f'accuracy before pruning: {evaluate(test, dict(pre_pruning))}')
-            print(f'metrics before pruning: {other_metrics(test, dict(pre_pruning))}')
+            cmatrix, metrics = other_metrics(test, pre_pruning)
+            print(f'confusion matrix before pruning:\n {cmatrix}')
+            print(f'precision: {metrics[0]}\n recall: {metrics[1]}\n F1: {metrics[2]}')
             p = Pruning(dict(pre_pruning), test)
             post_pruning = dict(p.prune())
             print(f'accuracy after pruning: {evaluate(test, post_pruning)}')
-            print(f'metrics after pruning: {other_metrics(test, post_pruning)}')
+            cmatrix, metrics = other_metrics(test, post_pruning)
+            print(f'confusion matrix after pruning:\n {cmatrix}')
+            print(f'precision: {metrics[0]}\n recall: {metrics[1]}\n F1: {metrics[2]}')
             print_tree(dict(post_pruning), f'post_pruning')
 
         except IndexError:
@@ -70,7 +74,9 @@ if __name__ == '__main__':
             training, test = split_data(dataset)
             pre_pruning = decision_tree_learning(training, best_depth)
             print(f'accuracy before pruning: {evaluate(test, dict(pre_pruning))}')
-            print(f'metrics before pruning: {other_metrics(test, dict(pre_pruning))}')
+            cmatrix, metrics = other_metrics(test, pre_pruning)
+            print(f'confusion matrix before pruning:\n {cmatrix}')
+            print(f'precision: {metrics[0]}\n recall: {metrics[1]}\n F1: {metrics[2]}')
 
             p = Pruning(dict(pre_pruning), test)
             post_pruning = dict(p.prune())
@@ -78,7 +84,9 @@ if __name__ == '__main__':
             # evaluation - cross validation
 
             print(f'accuracy after pruning: {evaluate(test, post_pruning)}')
-            print(f'metrics after pruning: {other_metrics(test, post_pruning)}')
+            cmatrix, metrics = other_metrics(test, post_pruning)
+            print(f'confusion matrix after pruning:\n {cmatrix}')
+            print(f'precision: {metrics[0]}\n recall: {metrics[1]}\n F1: {metrics[2]}')
             
             # print_tree(dict(pre_pruning), f'pre_pruning_{type_}')
             print_tree(dict(post_pruning), f'post_pruning')
@@ -97,7 +105,9 @@ if __name__ == '__main__':
             training, test = split_data(dataset[i])
             pre_pruning = decision_tree_learning(training, best_depth)
             print(f'accuracy before pruning {type_}: {evaluate(test, dict(pre_pruning))}')
-            print(f'metrics before pruning {type_}: {other_metrics(test, dict(pre_pruning))}')
+            cmatrix, metrics = other_metrics(test, pre_pruning)
+            print(f'confusion matrix before pruning {type_}:\n {cmatrix}')
+            print(f'precision: {metrics[0]}\n recall: {metrics[1]}\n F1: {metrics[2]}')
 
             # pruning
 
@@ -107,8 +117,10 @@ if __name__ == '__main__':
             # evaluation - cross validation
 
             print(f'accuracy after pruning {type_}: {evaluate(test, post_pruning)}')
-            print(f'metrics after pruning {type_}: {other_metrics(test, post_pruning)}')
+            cmatrix, metrics = other_metrics(test, post_pruning)
+            print(f'confusion matrix after pruning {type_}:\n {cmatrix}')
+            print(f'precision: {metrics[0]}\n recall: {metrics[1]}\n F1: {metrics[2]}')
 
             # print_tree(dict(pre_pruning), f'pre_pruning_{type_}')
-            print_tree(dict(post_pruning), f'post_pruning')
+            print_tree(dict(post_pruning), f'post_pruning_{type_}')
             # print_tree(dict(final_tree), f'final_tree_{type_}')
