@@ -6,7 +6,7 @@ from printing import print_tree
 
 depth = 10
 
-test_split = 0.2
+test_split = 0.1
 
 #imports the data file as shown from function in labs
 def read_data(file_name):
