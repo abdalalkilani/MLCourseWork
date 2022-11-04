@@ -38,7 +38,6 @@ training_set, test_set = split_data(dataset) # splits the data into a training s
 
 ### Finding the optimal depth for a tree
 The following code snippet shows how to tune the depth paramter for your tree. `DTB.find_optimal_depth` will try every integer between `min_depth` and `max_depth` and returns the depth for which the average accuracy over all cross-validation data is the largest. Note: `dataset` is the whole dataset, not simply the training dataset.
-**Warning: this function takes very long to run**
 
 ```python
 from main import DecisionTreeBuilder
@@ -67,7 +66,7 @@ pruned_tree = dict(p.prune())
 ```
 
 ### Getting evaluation metrics
-The following code snippet shows how to obtain evaluation metrics for your tree. `evaluate` returns the accuracy of the tree with regard to the dataset that has been passed in. `other_metrics` returns a tuple of the confusion matrix and a matrix containing 3 rows, one for the precision, one for the recall and one for the F1-measure
+The following code snippet shows how to obtain evaluation metrics for your tree.
 
 ```python
 from main import evaluate, other_metrics
@@ -80,13 +79,3 @@ F1 = others[2]
 ```
 
 ### Printing the tree
-The following code snippet shows how to obtain a picture of a given tree. The `print_tree` function tales in the tree you want to print and the name of the file that will be created to save the figure.
-
-```python
-from main import print_tree
-
-print_tree(tree, name_of_output_file)
-```
-
-
-
