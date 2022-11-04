@@ -6,6 +6,7 @@ The reason behind this is that we treat the maximum depth of the tree as a hyper
 
 To run this: 
 1. Ensure that you are in the directory containing the ´main.py´ file
+2. Run the following command ´python3 main.py path/to/data´ where `path/to/data`
 
 ## Produce evaluation metrics with a depth requirement (strongly recommended)
 
