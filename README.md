@@ -22,7 +22,7 @@ This will print into terminal the accuracy of the tree, the confusion matrix as 
 
 **If you wish to obtain the results for the given datasets without waiting 17 hours:**
 - Clean dataset: run the command `python3 main.py ./intro2ML-coursework1/wifi_db/clean_dataset.txt 6`
-- Noisy dataset: run the command `python3 main.py ./intro2ML-coursework1/wifi_db/noisy_dataset.txt 11`
+- Noisy dataset: run the command `python3 main.py ./intro2ML-coursework1/wifi_db/noisy_dataset.txt 18`
 
 The hyperparameter tuning told us that the best depths for clean and noisy were 6 and 11 respectively.
 ## Using individual functions
