@@ -143,66 +143,91 @@ test_data = {
     }
 }
 
-squeeze_bounds = 0.8
-depth_sum = []
+squeeze_bounds = 0.8    # Depth Squeeze, prevents labels from being on exact bounds of the canvas (More readable)
+depth_sum = []      # Array to keep track of how many nodes there are at each depth
+
+# Add Extra Labels to nodes:
+#       - Count : Left to Right, where the Leaf is at the specific depth
+#       - Depth : How deep the Node is
+#       - Text : What the Node should display
 
 def modify_tree(decision_tree: dict, depth: int):
 
+    # If the node is the first of its depth, expand the depth_sum array and count it. 
+    # Otherwise just increment the depth sum at the nodes depth
     if len(depth_sum) < depth+1:
         depth_sum.append(1)
     else:
         depth_sum[depth] += 1
 
+    # Set the Depth and Count Labels
     decision_tree["count"] = depth_sum[depth] - 1
     decision_tree["depth"] = depth
 
     if "label" in decision_tree.keys():
+        
         # It's a leaf node. Find the label for the leaf.
-        # max_label = ["x", 0]
-
-        # for values in decision_tree["label"].keys():
-        #     if decision_tree["label"][values] > max_label[1]:
-        #         max_label[0] = values
-
-        # decision_tree["text"] = max_label[0]
-
         decision_tree['text'] = max(decision_tree['label'], key = decision_tree['label'].get)
 
+        # Return the Depth the Leaf node was at
         return depth
     else:
+        # Set text for the condition
         decision_tree["text"] = "Router " + str(decision_tree["attribute"]) + " < " + str(decision_tree["value"])
+
+        # Repeat for both children
         depth1 = modify_tree(decision_tree["left"], depth+1)
         depth2 = modify_tree(decision_tree["right"], depth+1)
 
+        # Find the Maximum depth achieved
         if (depth1 > depth2):
             return depth1
         else:
             return depth2
 
+# Create Labels and Branchess
+
 def draw_diagram(decision_tree: dict, fig: plt.figure, final_depth: int, ax: plt.subplot, color='blue', parent_x = 0.0, parent_y = 0.0):
+    
+    # Find the X and Y coordinates for the labels
     y_coord = 1 - ( ( (decision_tree["depth"] / final_depth) * squeeze_bounds ) + 0.1 )
     x_coord = ( (decision_tree['count']+1) / (depth_sum[decision_tree['depth']]+1) )
+
+    # Font Size for Label
     fontsize = 20
 
+    # Create Label at X and Y coordinates
     fig.text(x_coord, y_coord, decision_tree["text"], transform=fig.transFigure, bbox={'facecolor': 'white', 'pad': 5}, ha='center', va='center', fontsize = fontsize)
     
+    # If the label is the not the top node. Create branches to the parent
     if parent_x != 0.0:
         ax.plot([x_coord, parent_x],[y_coord, parent_y], color=color, linewidth=2, transform=fig.transFigure, figure=fig)
 
+    # If its not a Leaf, draw the children
     if "label" not in decision_tree.keys():
         draw_diagram(decision_tree["left"], fig, final_depth, ax, 'green', x_coord, y_coord)
         draw_diagram(decision_tree["right"], fig, final_depth, ax, 'blue', x_coord, y_coord)
 
+# Function to print the tree
 def print_tree(decision_tree: dict, name):
     
     fig = plt.figure()
+
+    # Modify the nodes and get the final depth
     final_depth = modify_tree(decision_tree, 0)
 
     ax = fig.add_subplot()
 
+    # Draw the branches and text boxes
     draw_diagram(decision_tree, fig, final_depth, ax)
+
+    # Remove axes
     ax.set_position([0, 0, 1, 1])
+
+    # Prepare image to be large 
     fig.set_size_inches(40, 20)
+
+    # Save image
     plt.savefig(f'fig_{name}.jpg', dpi=200)
 
 if __name__ == '__main__':
