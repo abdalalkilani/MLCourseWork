@@ -21,9 +21,10 @@ To do this:
 This will print into terminal the accuracy of the tree, the confusion matrix as well as the precision, recall and F1-measure. This will also save a jpg image named `fig_post_pruning.jpg`.
 
 **If you wish to obtain the results for the given datasets without waiting 17 hours:**
-- Clean dataset: run the command `python3 main.py ./intro2ML-coursework1/wifi_db/clean_dataset.txt 8`
+- Clean dataset: run the command `python3 main.py ./intro2ML-coursework1/wifi_db/clean_dataset.txt 6`
 - Noisy dataset: run the command `python3 main.py ./intro2ML-coursework1/wifi_db/noisy_dataset.txt 11`
 
+The hyperparameter tuning told us that the best depths for clean and noisy were 6 and 11 respectively.
 ## Using individual functions
 
 ### Loading data and seperating it
@@ -70,7 +71,11 @@ The following code snippet shows how to obtain evaluation metrics for your tree.
 ```python
 from main import evaluate, other_metrics
 
-accuracy = evaluate(test_set, tree)
-confusion_matrix, others = other_metrics(test_set, tree)
-
+accuracy = evaluate(tree, dataset)
+confusion_matrix, others = other_metrics(tree, dataset)
+precision = others[0]
+recall = others[1]
+F1 = others[2]
 ```
+
+### Printing the tree
